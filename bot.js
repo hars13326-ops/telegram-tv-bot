@@ -1,6 +1,12 @@
+const express = require("express");
 const TelegramBot = require("node-telegram-bot-api");
 
+const app = express();
+
+const PORT = process.env.PORT || 3000;
 const TOKEN = "8804458806:AAEJqNyzSlxOYuVfei99u68hX2G7m1XFhnQ";
+
+app.use(express.static("public"));
 
 const bot = new TelegramBot(TOKEN, {
   polling: true
@@ -21,32 +27,22 @@ const channels = [
 ];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "📺 اختر قناة:", {
+
+  const keyboard = channels.map(c => ([
+    {
+      text: c.name,
+      url: `${process.env.APP_URL}/player.html?src=${encodeURIComponent(c.url)}`
+    }
+  ]));
+
+  bot.sendMessage(msg.chat.id, "📺 اختر قناة", {
     reply_markup: {
-      inline_keyboard: channels.map((c, i) => ([
-        {
-          text: c.name,
-          callback_data: `play_${i}`
-        }
-      ]))
+      inline_keyboard: keyboard
     }
   });
+
 });
 
-bot.on("callback_query", async (query) => {
-  const index = parseInt(query.data.replace("play_", ""));
-  const channel = channels[index];
-
-  if (!channel) return;
-
-  await bot.answerCallbackQuery(query.id, {
-    text: `تشغيل ${channel.name}`
-  });
-
-  bot.sendMessage(
-    query.message.chat.id,
-    `▶️ ${channel.name}\n${channel.url}`
-  );
+app.listen(PORT, () => {
+  console.log("Server Running");
 });
-
-console.log("Bot is running...");
