@@ -1,12 +1,6 @@
-const express = require("express");
 const TelegramBot = require("node-telegram-bot-api");
 
-const app = express();
-
-const PORT = process.env.PORT || 3000;
 const TOKEN = "8804458806:AAEJqNyzSlxOYuVfei99u68hX2G7m1XFhnQ";
-
-app.use(express.static("public"));
 
 const bot = new TelegramBot(TOKEN, {
   polling: true
@@ -27,22 +21,16 @@ const channels = [
 ];
 
 bot.onText(/\/start/, (msg) => {
-
-  const keyboard = channels.map(c => ([
-    {
-      text: c.name,
-      url: `${process.env.APP_URL}/player.html?src=${encodeURIComponent(c.url)}`
-    }
-  ]));
-
-  bot.sendMessage(msg.chat.id, "📺 اختر قناة", {
+  bot.sendMessage(msg.chat.id, "📺 اختر قناة:", {
     reply_markup: {
-      inline_keyboard: keyboard
+      inline_keyboard: channels.map(c => ([
+        {
+          text: c.name,
+          url: c.url   // ✅ هنا التعديل المهم
+        }
+      ]))
     }
   });
-
 });
 
-app.listen(PORT, () => {
-  console.log("Server Running");
-});
+console.log("Bot is running...");
