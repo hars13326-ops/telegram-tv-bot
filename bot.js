@@ -21,20 +21,19 @@ const channels = [
 ];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(
-  msg.chat.id,
-  `🎉 أهلاً وسهلاً بك في بوت القنوات
+  bot.sendMessage(msg.chat.id, "📺 اختر قناة:", {
+    reply_markup: {
+      inline_keyboard: channels.map(c => ([
+        {
+          text: c.name,
+          url: c.url   // ✅ هنا التعديل المهم
+        }
+      ]))
+    }
+  });
+});
 
-📺 اختر القناة التي تريد مشاهدتها من القائمة أدناه.
-
-🛠 تطوير وتعديل:
-فن الظلام سيف العامري
-
-📞 للتواصل:
-+967738192669
-
-💬 واتساب:
-https://wa.me/message/YCH3CMCZXX3MN1
+console.log("Bot is running...");https://wa.me/message/YCH3CMCZXX3MN1
 
 نتمنى لكم مشاهدة ممتعة 🌹`,
   {
