@@ -21,16 +21,50 @@ const channels = [
 ];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "📺 اختر قناة:", {
-    reply_markup: {
-      inline_keyboard: channels.map(c => ([
-        {
-          text: c.name,
-          url: c.url   // ✅ هنا التعديل المهم
-        }
-      ]))
-    }
-  });
-});
 
-console.log("Bot is running...");
+  const keyboard = channels.map(c => ([
+    {
+      text: c.name,
+      url: `${APP_URL}/player.html?src=${encodeURIComponent(c.url)}`
+    }
+  ]));
+
+  // أزرار التواصل
+  keyboard.push([
+    {
+      text: "💬 واتساب المطور",
+      url: "https://wa.me/message/YCH3CMCZXX3MN1"
+    }
+  ]);
+
+  keyboard.push([
+    {
+      text: "📞 اتصال هاتفي",
+      url: "tel:+967738192669"
+    }
+  ]);
+
+  keyboard.push([
+    {
+      text: "📩 رسالة نصية",
+      url: "sms:+967738192669"
+    }
+  ]);
+
+  bot.sendMessage(
+    msg.chat.id,
+`🎉 أهلاً وسهلاً بك في بوت البث المباشر للمباريات
+
+📺 اختر القناة التي تريد مشاهدتها من الأزرار أدناه.
+
+⚽ نتمنى لك مشاهدة ممتعة.
+
+🛠 تطوير وتعديل: فن الظلام سيف العامري`,
+    {
+      reply_markup: {
+        inline_keyboard: keyboard
+      }
+    }
+  );
+
+});
