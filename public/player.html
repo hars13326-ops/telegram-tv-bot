@@ -1,75 +1,427 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TV Player</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IPTV PRO - بث مباشر</title>
 
 <style>
 body{
-    margin:0;
-    background:#000;
+margin:0;
+font-family:Tahoma;
+background:#05000f;
+color:#00ffd5;
+overflow-x:hidden;
+}
+
+/* خلفية */
+body::before{
+content:"";
+position:fixed;
+width:200%;
+height:200%;
+background:radial-gradient(circle,#ff00ff22,#00ffd522,#0000ff22);
+animation:bg 12s linear infinite;
+z-index:-1;
+}
+
+@keyframes bg{
+0%{transform:translate(0,0);}
+50%{transform:translate(-5%,-5%);}
+100%{transform:translate(0,0);}
+}
+
+/* نص متحرك */
+@keyframes moveText{
+0%{transform:translateX(60px);opacity:0;}
+50%{transform:translateX(0);opacity:1;}
+100%{transform:translateX(-60px);opacity:1;}
+}
+
+/* شريط */
+.marquee{
+background:#000;
+overflow:hidden;
+white-space:nowrap;
+border-top:1px solid #ff00ff;
+border-bottom:1px solid #00ffd5;
+padding:8px;
+}
+
+.marquee span{
+display:inline-block;
+padding-left:100%;
+animation:scroll 12s linear infinite;
+color:#00ffd5;
+}
+
+@keyframes scroll{
+0%{transform:translateX(100%);}
+100%{transform:translateX(-100%);}
+}
+
+/* الهيدر */
+.header{
+text-align:center;
+padding:20px;
+background:linear-gradient(90deg,#12002a,#000,#001a33);
+border-bottom:2px solid #00ffd5;
+}
+
+.header h1{
+animation:moveText 4s infinite;
+color:#ff00ff;
+}
+
+/* المشغل */
+.player{
+width:95%;
+max-width:1400px;
+height:650px;
+margin:20px auto;
+position:relative;
+background:#000;
+border:2px solid #00ffd5;
+border-radius:12px;
+overflow:hidden;
 }
 
 video{
-    width:100%;
-    height:100vh;
-    background:#000;
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+/* Spinner */
+.spinner{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:60px;
+height:60px;
+border:5px solid rgba(0,255,213,0.2);
+border-top:5px solid #00ffd5;
+border-radius:50%;
+animation:spin 1s linear infinite;
+display:none;
+z-index:20;
+}
+
+@keyframes spin{
+0%{transform:translate(-50%,-50%) rotate(0deg);}
+100%{transform:translate(-50%,-50%) rotate(360deg);}
+}
+
+/* أزرار */
+.btn{
+position:absolute;
+top:10px;
+background:#000000aa;
+color:#00ffd5;
+border:1px solid #00ffd5;
+padding:8px;
+border-radius:8px;
+cursor:pointer;
+z-index:10;
+}
+
+.full{left:10px;}
+.q{right:10px;}
+.s{right:110px;}
+
+/* القوائم */
+.menu{
+position:absolute;
+top:50px;
+right:10px;
+background:#000;
+border:1px solid #00ffd5;
+border-radius:10px;
+display:none;
+flex-direction:column;
+min-width:180px;
+z-index:20;
+}
+
+.menu div{
+padding:10px;
+cursor:pointer;
+border-bottom:1px solid #222;
+}
+
+.menu div:hover{
+background:#00ffd5;
+color:#000;
+}
+
+/* القنوات */
+.channels{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+padding:10px;
+}
+
+.channel{
+width:150px;
+padding:10px;
+background:#12002a;
+border:1px solid #00ffd5;
+border-radius:8px;
+cursor:pointer;
+text-align:center;
+}
+
+/* روابط */
+.contact{
+text-align:center;
+padding:20px;
+}
+
+.btnc{
+display:inline-block;
+margin:5px;
+padding:10px 15px;
+background:linear-gradient(90deg,#ff00ff,#00ffd5);
+color:#fff;
+border-radius:10px;
+text-decoration:none;
+font-weight:bold;
+}
+
+/* شريط سفلي */
+.footer-marquee{
+background:#000;
+overflow:hidden;
+white-space:nowrap;
+border-top:2px solid #ff00ff;
+padding:10px;
+}
+
+.footer-marquee span{
+display:inline-block;
+padding-left:100%;
+animation:scroll 12s linear infinite;
+color:#ff00ff;
 }
 </style>
 </head>
 
 <body>
 
-<video id="video" controls autoplay muted playsinline></video>
+<!-- الهيدر -->
+<div class="header">
+<h1>🔥 بث مباشر لجميع مباريات كأس العالم 🔥</h1>
+<p>هذا البث برعاية شبكة الباشت نت</p>
+<p>تطوير: فن الظلام سيف العامري</p>
+</div>
+
+<!-- شريط -->
+<div class="marquee">
+<span>⚡ بث مباشر - جودة عالية - بدون تقطيع - بث احترافي فن الضلام سيف العامري ⚡</span>
+</div>
+
+<!-- المشغل -->
+<div class="player" id="playerBox">
+
+<button class="btn full" onclick="toggleFull()">⛶</button>
+<button class="btn s" onclick="toggleSettings()">⚙ التفضيلات</button>
+<button class="btn q" onclick="toggleQuality()">⚙ الجودة</button>
+
+<div class="menu" id="settingsMenu"></div>
+<div class="menu" id="qualityMenu"></div>
+
+<div class="spinner" id="spinner"></div>
+
+<video id="video" controls playsinline
+poster="https://i.ibb.co/KjSxFZr0/file-00000000d5c072469d1d166172560905.png">
+</video>
+
+</div>
+
+<!-- القنوات -->
+<div class="channels">
+<div class="channel" onclick="play(0)">القناة 1</div>
+<div class="channel" onclick="play(1)">القناة 2</div>
+<div class="channel" onclick="play(2)">القناة 3</div>
+<div class="channel" onclick="play(3)">القناة 4</div>
+<div class="channel" onclick="play(4)">القناة 5</div>
+<div class="channel" onclick="play(5)">القناة 6</div>
+<div class="channel" onclick="play(6)">القناة 7</div>
+<div class="channel" onclick="play(7)">القناة 8</div>
+<div class="channel" onclick="play(8)">القناة 9</div>
+<div class="channel" onclick="play(9)">القناة 10</div>
+<div class="channel" onclick="play(10)">القناة 11</div>
+</div>
+
+<!-- روابط -->
+<div class="contact">
+<h3>📞 التواصل</h3>
+<a class="btnc" href="https://wa.me/message/YCH3CMCZXX3MN1">واتساب</a>
+<a class="btnc" href="tel:+967738192669">اتصال</a>
+<a class="btnc" href="sms:+967738192669">رسالة</a>
+</div>
+
+<!-- شريط -->
+<div class="footer-marquee">
+<span>🏆 شكراً لمتابعتكم - البث المباشر عبر موقع الاسطورة فن الظلام سيف العامري ⚡</span>
+</div>
+
+<!-- الفوتر -->
+<div class="footer">
+© جميع الحقوق محفوظة - لفخامة فن الظلام سيف العامري
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const src = params.get("src");
 
-const video = document.getElementById("video");
+let video=document.getElementById("video");
+let spinner=document.getElementById("spinner");
+let hls;
 
-if (!src) {
-    document.body.innerHTML = "<h2 style='color:white;text-align:center'>لا يوجد رابط بث</h2>";
-} else {
+let channels=[
+"http://live.zerolagvpn.com/hls/ch1/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch2/index.m3u8",
+"http://live.zerolagvpn.com/hls/a_ch3/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch4/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch5/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch6/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch7/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch8/index.m3u8",
+"http://t1.zerolagvpn.com/hls/ch9/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch10/index.m3u8",
+"http://live.zerolagvpn.com/hls/ch11/index.m3u8"
+];
 
-    if (Hls.isSupported()) {
+let current=0;
 
-        const hls = new Hls();
+let settings={
+forceFS:false,
+fit:"contain",
+loop:false,
+shuffle:false,
+autoNext:false
+};
 
-        hls.loadSource(src);
+function show(){spinner.style.display="block";}
+function hide(){spinner.style.display="none";}
 
-        hls.attachMedia(video);
+/* تشغيل */
+function play(i){
 
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+current=i;
+let url=channels[i];
 
-            video.play().catch(err => {
-                console.log(err);
-            });
+show();
 
-        });
+video.loop=settings.loop;
+video.style.objectFit=settings.fit;
 
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+if(hls) hls.destroy();
 
-        video.src = src;
-
-        video.addEventListener("loadedmetadata", function () {
-
-            video.play().catch(err => {
-                console.log(err);
-            });
-
-        });
-
-    } else {
-
-        document.body.innerHTML =
-        "<h2 style='color:white;text-align:center'>المتصفح لا يدعم HLS</h2>";
-
-    }
+if(video.canPlayType("application/vnd.apple.mpegurl")){
+video.src=url;
+video.onloadeddata=()=>{hide();video.play();};
 }
+else if(Hls.isSupported()){
+hls=new Hls({
+enableWorker:true,
+lowLatencyMode:true
+});
+
+hls.loadSource(url);
+hls.attachMedia(video);
+
+hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+hide();
+video.play();
+});
+}
+
+if(settings.forceFS){
+document.getElementById("playerBox").requestFullscreen();
+}
+
+video.onended=function(){
+
+if(settings.loop) return video.play();
+
+if(settings.shuffle){
+play(Math.floor(Math.random()*channels.length));
+return;
+}
+
+if(settings.autoNext){
+let n=current+1;
+if(n>=channels.length) n=0;
+play(n);
+}
+
+};
+
+}
+
+/* fullscreen */
+function toggleFull(){
+let e=document.getElementById("playerBox");
+if(!document.fullscreenElement)e.requestFullscreen();
+else document.exitFullscreen();
+}
+
+/* جودة حقيقية HLS */
+function toggleQuality(){
+
+let menu=document.getElementById("qualityMenu");
+menu.style.display=menu.style.display==="flex"?"none":"flex";
+menu.innerHTML="";
+
+let auto=document.createElement("div");
+auto.innerText="🔄 Auto";
+auto.onclick=()=>{if(hls)hls.currentLevel=-1;menu.style.display="none";};
+menu.appendChild(auto);
+
+if(!hls || !hls.levels){
+let d=document.createElement("div");
+d.innerText="لا توجد جودة";
+menu.appendChild(d);
+return;
+}
+
+hls.levels.forEach((l,i)=>{
+let d=document.createElement("div");
+d.innerText="🎥 "+(l.height?l.height+"p":"Level "+i);
+d.onclick=()=>{hls.currentLevel=i;menu.style.display="none";};
+menu.appendChild(d);
+});
+
+}
+
+/* تفضيلات */
+function toggleSettings(){
+
+let menu=document.getElementById("settingsMenu");
+menu.style.display=menu.style.display==="flex"?"none":"flex";
+
+menu.innerHTML=`
+<div onclick="settings.forceFS=!settings.forceFS">فرض ملء الشاشة</div>
+<div onclick="setFit('fill')">تمديد</div>
+<div onclick="setFit('cover')">قص</div>
+<div onclick="setFit('contain')">احتواء</div>
+<div onclick="settings.loop=!settings.loop">تكرار</div>
+<div onclick="settings.shuffle=!settings.shuffle">عشوائي</div>
+<div onclick="settings.autoNext=!settings.autoNext">التالي تلقائي</div>
+`;
+}
+
+function setFit(v){
+settings.fit=v;
+video.style.objectFit=v;
+document.getElementById("settingsMenu").style.display="none";
+}
+
 </script>
 
 </body>
