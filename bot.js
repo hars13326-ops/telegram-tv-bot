@@ -25,7 +25,7 @@ bot.onText(/\/start/, (msg) => {
   const keyboard = channels.map(c => ([
     {
       text: c.name,
-      url: `${APP_URL}/player.html?src=${encodeURIComponent(c.url)}`
+      url: c.url
     }
   ]));
 
@@ -39,27 +39,32 @@ bot.onText(/\/start/, (msg) => {
 
   keyboard.push([
     {
-      text: "📞 اتصال هاتفي",
+      text: "📞 الاتصال بالمطور",
       url: "tel:+967738192669"
     }
   ]);
 
   keyboard.push([
     {
-      text: "📩 رسالة نصية",
+      text: "📩 رسالة للمطور",
       url: "sms:+967738192669"
     }
   ]);
 
   bot.sendMessage(
     msg.chat.id,
-`🎉 أهلاً وسهلاً بك في بوت البث المباشر للمباريات
+`🎉 أهلاً وسهلاً بك في بوت القنوات
 
-📺 اختر القناة التي تريد مشاهدتها من الأزرار أدناه.
+📺 اختر القناة التي تريد مشاهدتها من القائمة أدناه.
 
-⚽ نتمنى لك مشاهدة ممتعة.
+🛠 تطوير وتعديل:
+فن الظلام سيف العامري
 
-🛠 تطوير وتعديل: فن الظلام سيف العامري`,
+📞 رقم التواصل:
++967738192669
+
+💬 واتساب:
+https://wa.me/message/YCH3CMCZXX3MN1`,
     {
       reply_markup: {
         inline_keyboard: keyboard
