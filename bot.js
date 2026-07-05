@@ -21,37 +21,7 @@ const channels = [
 ];
 
 bot.onText(/\/start/, (msg) => {
-
-  const keyboard = channels.map(c => ([
-    {
-      text: c.name,
-      url: c.url
-    }
-  ]));
-
-  // أزرار التواصل
-  keyboard.push([
-    {
-      text: "💬 واتساب المطور",
-      url: "https://wa.me/message/YCH3CMCZXX3MN1"
-    }
-  ]);
-
-  keyboard.push([
-    {
-      text: "📞 الاتصال بالمطور",
-      url: "tel:+967738192669"
-    }
-  ]);
-
-  keyboard.push([
-    {
-      text: "📩 رسالة للمطور",
-      url: "sms:+967738192669"
-    }
-  ]);
-
- bot.sendMessage(
+  bot.sendMessage(
   msg.chat.id,
   `🎉 أهلاً وسهلاً بك في بوت القنوات
 
