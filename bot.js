@@ -51,25 +51,25 @@ bot.onText(/\/start/, (msg) => {
     }
   ]);
 
-  bot.sendMessage(
-    msg.chat.id,
-`🎉 أهلاً وسهلاً بك في بوت القنوات
+ bot.sendMessage(
+  msg.chat.id,
+  `🎉 أهلاً وسهلاً بك في بوت القنوات
 
 📺 اختر القناة التي تريد مشاهدتها من القائمة أدناه.
 
 🛠 تطوير وتعديل:
 فن الظلام سيف العامري
 
-📞 رقم التواصل:
+📞 للتواصل:
 +967738192669
 
 💬 واتساب:
-https://wa.me/message/YCH3CMCZXX3MN1`,
-    {
-      reply_markup: {
-        inline_keyboard: keyboard
-      }
-    }
-  );
+https://wa.me/message/YCH3CMCZXX3MN1
 
-});
+نتمنى لكم مشاهدة ممتعة 🌹`,
+  {
+    reply_markup: {
+      inline_keyboard: keyboard
+    }
+  }
+);
